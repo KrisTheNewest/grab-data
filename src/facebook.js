@@ -12,7 +12,7 @@ import puppeteer from "puppeteer";
 
 (async function facebookFeed() {
 
-	const browser = await puppeteer.launch({ headless: "new"});
+	const browser = await puppeteer.launch({ headless: "new" });
     const page    = await browser.newPage();
 	await page.goto('https://www.facebook.com/arknightstw');
 	const cookieBtn = await page.waitForSelector('::-p-xpath(/html/body/div[2]/div[1]/div/div[2]/div/div/div/div[2]/div/div[1])', { timeout: 0 });
@@ -76,8 +76,6 @@ import puppeteer from "puppeteer";
 				const videoError   = await postContent.$(`::-p-xpath(.//*[contains(text(),"${polishText}") or contains(text(),"${englishText}")])`);
 				const videoElement = await postContent.$("::-p-xpath(.//video)"); // Sorry, we're having trouble with playing this video.
 				const videoPlayBtn = await postContent.$("::-p-xpath(.//div[3]/div[1]/div/div/div[1]/div[2]/div/div[2]/div/i/div/i)");
-				const encodedString  = await postContent.screenshot({ encoding: "base64" });
-				await writeFile(`./image${index}.png`, encodedString, 'base64');
 					// .then(video => video)  ???????????????????????????
 					// .catch(() => null)
 
@@ -89,31 +87,31 @@ import puppeteer from "puppeteer";
 				const fullLink  = await post.$$eval("::-p-xpath(.//a)", l => l[3].href);
 				const shortLink = fullLink.substring(0, fullLink.indexOf("?"));
 				let videoLink = null;
-				// if (videoError || videoElement) {
-				// 	const videoPage = await browser.newPage();
-				// 	await videoPage.goto(fullLink);
-				// 	await new Promise((resolve) => {
-				// 		const fallback = setTimeout(() => {
-				// 			resolve("Twitter video didn't arrive in time!");
-				// 			// const meta = tweetPage.$eval("::-p-xpath(//meta[@property=\"og:image\"])", meta => meta.content);
-				// 			// resolve(meta);
-				// 			//TODO: ADD retrying
-				// 		}, 60 * 1000);
+				if (videoError || videoElement) {
+					const videoPage = await browser.newPage();
+					await videoPage.goto(fullLink);
+					await new Promise((resolve) => {
+						const fallback = setTimeout(() => {
+							resolve("Twitter video didn't arrive in time!");
+							// const meta = tweetPage.$eval("::-p-xpath(//meta[@property=\"og:image\"])", meta => meta.content);
+							// resolve(meta);
+							//TODO: ADD retrying
+						}, 60 * 1000);
 			
-				// 		videoPage.on('response', (response) => {
-				// 			const reponseUrl = response.url();
-				// 			if (reponseUrl.includes("mp4")) {
-				// 				resolve(reponseUrl);
-				// 				clearTimeout(fallback);
-				// 			}
-				// 		});
-				// 	})
-				// 	.then(response => {
-				// 		videoLink = response;
-				// 	})
-				// 	// .then(() => wait(5000))
-				// 	.finally(() => videoPage.close());
-				// }
+						videoPage.on('response', (response) => {
+							const reponseUrl = response.url();
+							if (reponseUrl.includes("mp4")) {
+								resolve(reponseUrl);
+								clearTimeout(fallback);
+							}
+						});
+					})
+					.then(response => {
+						videoLink = response;
+					})
+					// .then(() => wait(5000))
+					.finally(() => videoPage.close());
+				}
 
 				postObj["link"] = shortLink;
 				postObj["video"] = videoLink;
@@ -128,6 +126,7 @@ import puppeteer from "puppeteer";
 				    videoError,
 				    videoElement,
 					videoPlayBtn,
+					videoLink,
 				    readableHash,
 				    // seeMoreBtn,
 				});
