@@ -1,7 +1,7 @@
 
 import { createHash, } from "node:crypto";
 import { setTimeout as wait } from "node:timers/promises";
-// import { writeFile } from "fs/promises";
+import { writeFile } from "fs/promises";
 
 import puppeteer from "puppeteer";
 
