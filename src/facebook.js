@@ -81,7 +81,7 @@ import puppeteer from "puppeteer";
 
 				const videoError   = await postContent.$(`::-p-xpath(.//*[contains(text(),"${polishText}") or contains(text(),"${englishText}")])`);
 				const videoElement = await postContent.$("::-p-xpath(.//video)"); // Sorry, we're having trouble with playing this video.
-				const videoPlayBtn = await postContent.$("::-p-xpath(.//div[3]/div[1]/div/div/div[1]/div[2]/div/div[2]/div/i/div/i)");
+				const videoErrMsg  = await postContent.$(`::-p-xpath(.//*[contains(text(),"Learn more")])`);
 					// .then(video => video)  ???????????????????????????
 					// .catch(() => null)
 
@@ -131,7 +131,7 @@ import puppeteer from "puppeteer";
 				    // images,
 				    videoError,
 				    videoElement,
-					videoPlayBtn,
+					videoErrMsg,
 					videoLink,
 				    readableHash,
 				    // seeMoreBtn,
