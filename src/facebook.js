@@ -93,7 +93,7 @@ import puppeteer from "puppeteer";
 				const fullLink  = await post.$$eval("::-p-xpath(.//a)", l => l[3].href);
 				const shortLink = fullLink.substring(0, fullLink.indexOf("?"));
 				let videoLink = null;
-				if (videoError || videoElement) {
+				if (videoError || videoErrMsg) {
 					const videoPage = await browser.newPage();
 					await videoPage.goto(fullLink);
 					await new Promise((resolve) => {
