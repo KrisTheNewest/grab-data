@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./tests/test.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,6 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "minimist": "^1.2.8",
-    "puppeteer": "^21.5.1"
+    "puppeteer": "^21.4.1"
   }
 }
