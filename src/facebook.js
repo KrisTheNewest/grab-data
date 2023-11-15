@@ -19,11 +19,17 @@ import puppeteer from "puppeteer";
 	await cookieBtn.click();
 	const btn2 = await page.waitForSelector('::-p-xpath(/html/body/div[1]/div/div[1]/div/div[5]/div/div/div[1]/div/div[2]/div/div/div/div[1])', { timeout: 0 });
 	await btn2.click();
-	await wait(2000);
+    await wait(2000);
+    let encodedString = await page.screenshot({ encoding: "base64" });
+        writeFile(`./image1.png`, encodedString, 'base64');
     await page.evaluate(() => Promise.resolve(window.scrollBy(0, 3000)));
-	await wait(5000);
+    await wait(5000);
+    let encodedString2 = await page.screenshot({ encoding: "base64" });
+        writeFile(`./image2.png`, encodedString2, 'base64');
     await page.evaluate(() => Promise.resolve(window.scrollBy(0, 3000)));
-	await wait(5000);
+    let encodedString3 = await page.screenshot({ encoding: "base64" });
+        writeFile(`./image3.png`, encodedString3, 'base64');
+    await wait(5000);
 	// this technically includes two nodes: the header and the posts, you could just check for the posts
 	// but it just worksTM so i guess its better to keep it this way
 	//           the correct node:
