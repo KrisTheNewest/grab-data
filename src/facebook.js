@@ -22,7 +22,7 @@ import puppeteer from "puppeteer";
     await wait(2000);
     let encodedString = await page.screenshot({ encoding: "base64" });
         writeFile(`./image1.png`, encodedString, 'base64');
-    await page.evaluate(() => Promise.resolve(window.scrollBy(0, 750)));
+    await page.evaluate(() => Promise.resolve(window.scrollBy(0, 775)));
     await wait(5000);
     let encodedString2 = await page.screenshot({ encoding: "base64" });
         writeFile(`./image2.png`, encodedString2, 'base64');
