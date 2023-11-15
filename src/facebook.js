@@ -12,7 +12,7 @@ import puppeteer from "puppeteer";
 
 (async function facebookFeed() {
 
-	const browser = await puppeteer.launch({ headless: true});
+	const browser = await puppeteer.launch({ headless: "new"});
     const page    = await browser.newPage();
 	await page.goto('https://www.facebook.com/arknightstw');
 	const cookieBtn = await page.waitForSelector('::-p-xpath(/html/body/div[2]/div[1]/div/div[2]/div/div/div/div[2]/div/div[1])', { timeout: 0 });
