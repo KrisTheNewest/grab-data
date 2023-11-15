@@ -1,0 +1,177 @@
+
+import { createHash, } from "node:crypto";
+import { setTimeout as wait } from "node:timers/promises";
+// import { writeFile } from "fs/promises";
+
+import puppeteer from "puppeteer";
+
+// TODO: add visibility for buttons?
+// TODO: limit checking for video in the content
+// TODO: check for scrolling
+// TODO: add a separate tab for vids (its the first reponse with mp4)
+
+(async function facebookFeed() {
+
+	const browser = await puppeteer.launch({ headless: "new"});
+    const page    = await browser.newPage();
+	await page.goto('https://www.facebook.com/arknightstw');
+	const cookieBtn = await page.waitForSelector('::-p-xpath(/html/body/div[2]/div[1]/div/div[2]/div/div/div/div[2]/div/div[1])', { timeout: 0 });
+	await cookieBtn.click();
+	const btn2 = await page.waitForSelector('::-p-xpath(/html/body/div[1]/div/div[1]/div/div[5]/div/div/div[1]/div/div[2]/div/div/div/div[1])', { timeout: 0 });
+	await btn2.click();
+	await wait(2000);
+    await page.evaluate(() => Promise.resolve(window.scrollBy(0, 3000)));
+	await wait(5000);
+    await page.evaluate(() => Promise.resolve(window.scrollBy(0, 3000)));
+	await wait(5000);
+	// this technically includes two nodes: the header and the posts, you could just check for the posts
+	// but it just worksTM so i guess its better to keep it this way
+	//           the correct node:
+	//                           /html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[4]/div[2]/div/div[2]/div[2]
+	const posts = await page.$x("/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[4]/div[2]/div/div[2]/div/child::*");
+
+	posts.reverse().map(async post => {
+		///./div/div/div/div/div/div/div/div/div/div[2]/div/div/div[2] LINK NODE
+		// let encodedString = await post.takeScreenshot(true);
+		// writeFile(`./image${i}.png`, encodedString, 'base64');
+		// content node, ie text and images, skips comments
+		// this is the entire post basically
+		const postContent = await post.$("::-p-xpath(./div/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[3])")
+		// this is the text field, some post might not have it so we skip them
+		const postText    = await post.$("::-p-xpath(.//*[@data-ad-preview=\"message\"])");
+		// debug: save images to double check the elements
+		// let encodedString = await content[0].takeScreenshot(true);
+		// writeFile(`./image${i}.png`, encodedString, 'base64');
+
+		if (postContent && postText) {
+			// const postObj = {};
+
+			const shortText = await postText.evaluate((e) => e.textContent); // ".//*[@data-ad-preview=\"message\"]"
+			const cleanText = shortText.replaceAll("… See more", "");
+
+			// fb no longer includes dates
+			// so to avoid reposts we hash the text to compare
+			let ogHash = createHash('sha256');
+				ogHash.update(cleanText);
+
+			const readableHash = ogHash.digest('hex');
+			// if (!oldPosts.includes(readableHash)) {
+			// 	oldPosts.push(readableHash);
+
+				// postObj["text"] = cleanText;
+
+				// pics in comments sometimes are identical to the ones in the post
+				// so its better to get them from the content node
+				// the sooner media is scrapped the better chance to grab thubs
+				// before the videos play cause for some reason its impossible to stop them
+
+				// const images = await postContent.$$eval("::-p-xpath(.//img)",
+				// 	links => links
+				// 		.map((url) => url.src)
+				// 		.filter((url) =>
+				// 			!url.endsWith(".png") &&
+				// 			!url.includes("data:image") &&
+				// 			!url.includes("emoji")
+				// 		)
+				// );
+				//TODO: FIX FINDING VIDEO
+				// NOT POST!!!!!!!???????
+				const video = await postContent.$("::-p-xpath(.//*[contains(text(),\"Sorry, we're having trouble with playing this video\")])");
+				// const video = await post.$("::-p-xpath(.//video)"); // Sorry, we're having trouble with playing this video.
+					//.then(video => video)  ???????????????????????????
+					// .catch(() => null)
+
+				// postObj["media"] = mediaArr;
+
+				// its easier to get the link from the full post 
+				// instead of looking for another node
+				// first 3 items are the name date and a separator
+				const fullLink  = await post.$$eval("::-p-xpath(.//a)", l => l[3].href);
+				const shortLink = fullLink.substring(0, fullLink.indexOf("?"));
+
+				if (video) {
+					const videoPage = await browser.newPage();
+					await videoPage.goto(fullLink);
+					await new Promise((resolve) => {
+						const fallback = setTimeout(() => {
+							resolve("Twitter video didn't arrive in time!");
+							// const meta = tweetPage.$eval("::-p-xpath(//meta[@property=\"og:image\"])", meta => meta.content);
+							// resolve(meta);
+						}, 20 * 1000);
+			
+						videoPage.on('response', (response) => {
+							const reponseUrl = response.url();
+							if (reponseUrl.includes("mp4")) {
+								resolve(reponseUrl);
+								clearTimeout(fallback);
+							}
+						});
+					})
+					.then(response => console.log(response))
+					.finally(() => videoPage.close());
+				}
+
+				// postObj["link"] = shortLink;
+
+				// const seeMoreBtn = await postText.$("::-p-xpath(.//*[text()=\"See more\"])");
+
+				console.log({
+					// shortText,
+					// fullLink,
+					shortLink,
+					// cleanText,
+					// images,
+					video,
+					readableHash,
+					// seeMoreBtn,
+				});
+
+				// if (seeMoreBtn) {
+				// 	// bunch of waits to make sure
+				// 	// everything scrolls and loads in time
+				// 	await wait(i * 10 * 1000);
+
+				// 	//TODO: skip scorlling? keep it because it works?
+				// 	// location of the buttons on the page
+				// 	// cannot click outside the window
+				// 	const { y } = await post.getRect(); //x y
+
+				// 	//probably not necessary since we're clicking with js anyway
+				// 	await faceBookDriver.executeScript(`window.scrollTo(0,${ y })`);
+				// 	await wait(2000);
+					
+				// 	// clicking with the driver is unreliable since the UI covers the button
+				// 	// await faceBookDriver.actions().click(seeMore).perform();
+				// 	await faceBookDriver.executeScript("arguments[0].click();", seeMoreBtn);
+				// 	await wait(2000);
+
+				// 	const fullTextNode = await post.findElement("::-p-xpath(.//*[@data-ad-preview=\"message\"])"); 
+				// 	const fullText     = await fullTextNode.getText(); //role="button"
+
+				// 	postObj["text"] = fullText;
+				// }
+			// 	resolve(postObj);
+			}
+			else {
+				console.log(0);
+			}
+		// } 
+		// else {
+		// 	console.log({
+		// 		postContent, postText
+		// 	});
+		// }
+	})
+	// TODO: await browser.close()
+		// 		.finally(() => {
+		// 			// a hack?
+		// 			if (i === 0) {
+		// 				writeFile(
+		// 					"./time-n-logs/old-fb-posts.json",
+		// 					JSON.stringify(oldPosts, null, 4),
+		// 					{ encoding: "utf-8" }
+		// 				).catch((err) => console.error(err));
+		// 			}
+		// 		}));
+		// }
+})();
