@@ -12,7 +12,7 @@ import puppeteer from "puppeteer";
 
 (async function facebookFeed() {
 
-	const browser = await puppeteer.launch({ headless: "new" });
+	const browser = await puppeteer.launch({ headless: true });
     const page    = await browser.newPage();
 	await page.goto('https://www.facebook.com/arknightstw');
 	const cookieBtn = await page.waitForSelector('::-p-xpath(/html/body/div[2]/div[1]/div/div[2]/div/div/div/div[2]/div/div[1])', { timeout: 0 });
@@ -22,21 +22,21 @@ import puppeteer from "puppeteer";
     await wait(2000);
     // let encodedString = await page.screenshot({ encoding: "base64" });
     //     writeFile(`./image1.png`, encodedString, 'base64');
-    await page.evaluate(() => Promise.resolve(window.scrollBy(0, 900)));
-    await wait(5000);
-    let encodedString2 = await page.screenshot({ encoding: "base64" });
-        writeFile(`./image2.png`, encodedString2, 'base64');
     await page.evaluate(() => Promise.resolve(window.scrollBy(0, 1000)));
-    let encodedString3 = await page.screenshot({ encoding: "base64" });
-        writeFile(`./image3.png`, encodedString3, 'base64');
     await wait(5000);
+    // let encodedString2 = await page.screenshot({ encoding: "base64" });
+    //     writeFile(`./image2.png`, encodedString2, 'base64');
+    // await page.evaluate(() => Promise.resolve(window.scrollBy(0, 1000)));
+    // // let encodedString3 = await page.screenshot({ encoding: "base64" });
+    // //     writeFile(`./image3.png`, encodedString3, 'base64');
+    // await wait(5000);
 	// this technically includes two nodes: the header and the posts, you could just check for the posts
 	// but it just worksTM so i guess its better to keep it this way
 	//           the correct node:
 	//                           /html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[4]/div[2]/div/div[2]/div[2]
     page.$x("/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[4]/div[2]/div/div[2]/div/child::*")
 		.then((posts) => Promise.all(
-			posts.reverse().map(async (post, index) => {
+			posts.reverse().map(async (post, index, arr) => {
 		// content node, ie text and images, skips comments
 		// this is the entire post basically
 		const postContent = await post.$("::-p-xpath(./div/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[3])")
@@ -87,42 +87,22 @@ import puppeteer from "puppeteer";
 
 				// postObj["media"] = mediaArr;
 
-				// its easier to get the link from the full post 
+				// its easier to get the link from the full post
 				// instead of looking for another node
 				// first 3 items are the name date and a separator
 				const fullLink  = await post.$$eval("::-p-xpath(.//a)", l => l[3].href);
 				const shortLink = fullLink.substring(0, fullLink.indexOf("?"));
 				let videoLink = null;
 				if (videoError || videoErrMsg) {
-					const videoPage = await browser.newPage();
-					await videoPage.goto(fullLink);
-					await new Promise((resolve) => {
-						const fallback = setTimeout(() => {
-							resolve("Twitter video didn't arrive in time!");
-							// const meta = tweetPage.$eval("::-p-xpath(//meta[@property=\"og:image\"])", meta => meta.content);
-							// resolve(meta);
-							//TODO: ADD retrying
-						}, 60 * 1000);
-			
-						videoPage.on('response', (response) => {
-							const reponseUrl = response.url();
-							if (reponseUrl.includes("mp4")) {
-								resolve(reponseUrl);
-								clearTimeout(fallback);
-							}
-						});
-					})
-					.then(response => {
-						videoLink = response;
-					})
-					// .then(() => wait(5000))
-					.finally(() => videoPage.close());
+					const tweetPage = await goToVideo(browser, shortLink);
+                    videoLink = await tweetPage.getVideoUrl();
+                    await tweetPage.closeTweet();
 				}
 
 				postObj["link"] = shortLink;
 				postObj["video"] = videoLink;
 				// const seeMoreBtn = await postText.$("::-p-xpath(.//*[text()=\"See more\" or text()=\"Zobacz więcej\"])");
-
+				// console.log(arr.length - 1, index)
 				console.log({
 				    // shortText,
 				    // fullLink,
@@ -130,8 +110,8 @@ import puppeteer from "puppeteer";
 				    // cleanText,
 				    // images,
 				    videoError,
-				    videoElement,
-					videoErrMsg,
+				    // videoElement,
+					// videoErrMsg,
 					videoLink,
 				    readableHash,
 				    // seeMoreBtn,
@@ -150,13 +130,13 @@ import puppeteer from "puppeteer";
 				// // 	//probably not necessary since we're clicking with js anyway
 				// // 	// await seeMoreBtn.scrollIntoView();
 				// // 	// await wait(2000);
-					
+
 				// // 	// clicking with the driver is unreliable since the UI covers the button
 				// // 	// await faceBookDriver.actions().click(seeMore).perform();
 				// 	await seeMoreBtn.click();
 				// 	await wait(2000);
 
-				// 	const fullTextNode = await post.$("::-p-xpath(.//*[@data-ad-preview=\"message\"])"); 
+				// 	const fullTextNode = await post.$("::-p-xpath(.//*[@data-ad-preview=\"message\"])");
 				//     const fullText = await fullTextNode.evaluate((e) => e.textContent); // ".//*[@data-ad-preview=\"message\"]"
 
 				// 	console.log(fullText);
@@ -181,3 +161,44 @@ import puppeteer from "puppeteer";
 		browser.close();
 	});
 })();
+
+async function goToVideo(browser, url) {
+
+    const tweetPage = await goTo(url);
+
+    // technically you can get the links in the main page
+    // but there is no way to tie them to a post
+    async function getVideoUrl() {
+        return new Promise((resolve) => {
+            // instead of rejecting fallback to a thumbnail
+            const fallback = setTimeout(() => {
+				resolve("Twitter video didn't arrive in time!");
+            }, 20 * 1000);
+
+            tweetPage.on('response', (response) => {
+                const reponseUrl = response.url();
+				console.log(reponseUrl);
+                if (reponseUrl.includes("mp4")) {
+                    // console.log(reponseUrl);
+                    resolve(reponseUrl);
+                    clearTimeout(fallback);
+                }
+            });
+        });
+    }
+
+    // full text is available only in the full tweet
+    async function goTo() {
+        const tweetPage = await browser.newPage();
+        await tweetPage.goto(url);
+
+        return tweetPage;
+    }
+    async function closeTweet() {
+        return tweetPage.close();
+    }
+
+    return ({
+        getVideoUrl, closeTweet,
+    });
+}
