@@ -4,8 +4,13 @@ import { setTimeout as wait } from "node:timers/promises";
 
 //TODO: CLEAN UP!!!
 //TODO: MIIMIC TWITTER API
+//TODO: ACCOMODATE FOR TEXTLESS POSTS
 
-export default async function twitterFeed(handle, cookies) {
+import firstDate from "../time.json" assert { type: 'json' }; 
+const startUpDate = Date.parse(firstDate);
+const handleDatesMap = new Map();
+
+export default async function twitterFeed(handle, cookies, /*date*/) {
 
     const browser = await puppeteer.launch({ headless: "new" });
     const page    = await browser.newPage();
@@ -34,7 +39,11 @@ export default async function twitterFeed(handle, cookies) {
                 // if a date wasn't saved yet it is added with a handle as the key
                 // this way we don't need to keep handles in this file
                 const postDateJson  = await tweet.$eval("::-p-xpath(.//time)", link => link.getAttribute("datetime"));
+                const postDateEpoch = Date.parse(postDateJson);
+                const lastDate = handleDatesMap.has(handle) ? handleDatesMap.get(handle) : startUpDate;
 
+                if (postDateEpoch <= lastDate) return 0;
+                handleDatesMap.set(handle, postDateEpoch);
                 // profile
                 // certain parts of tweets are "tagged" data-testid attribute
                 // i dunno how reliable it is in a long run
