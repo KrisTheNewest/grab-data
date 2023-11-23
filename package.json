@@ -1,5 +1,5 @@
 {
-  "name": "grab-data",
+  "name": "@kristhenewest/grab-data",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,7 @@
     "test": "node ./tests/test.js"
   },
   "publishConfig": {
-    "@energicos:registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com/@kristhenewest"
   },
   "repository": {
     "type": "git",
