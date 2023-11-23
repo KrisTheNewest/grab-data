@@ -108,7 +108,7 @@ export default async function twitterFeed(handle, cookies, /*date*/) {
 
 async function goToFullTweet(browser, url) {
 
-    const tweetPage = await goTo(url);
+    const tweetPage = await goTo();
 
     // technically you can get the links in the main page
     // but there is no way to tie them to a post
@@ -154,7 +154,7 @@ async function goToFullTweet(browser, url) {
 
 async function parseText(tweet) {
     const textNode = await tweet.$("::-p-xpath(.//*[@data-testid='tweetText'])"); // data-testid="tweetText"
-    const fullText = await textNode.evaluate((e) => e.textContent);
+    const fullText = await textNode?.evaluate((e) => e.textContent);
 
     return fullText;
 }
