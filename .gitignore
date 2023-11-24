@@ -128,3 +128,5 @@ dist
 cookies.json
 time.json
 .npmrc
+rollup.config.js
+.vscode
