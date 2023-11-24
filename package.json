@@ -26,7 +26,6 @@
   "homepage": "https://github.com/KrisTheNewest/grab-data#readme",
   "dependencies": {
     "dotenv": "^16.3.1",
-    "minimist": "^1.2.8",
     "puppeteer": "^21.4.1"
   },
   "devDependencies": {
