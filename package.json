@@ -1,11 +1,11 @@
 {
   "name": "@kristhenewest/grab-data",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Getting data from twitter and facebook",
   "type": "module",
   "exports": {
-    "import": "./src/twitter.js",
-    "require": "./cjs/twitter.js"
+    "import": "./index.js",
+    "require": "./index.cjs"
   },
   "scripts": {
     "test": "node ./tests/test.js"

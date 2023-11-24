@@ -1,4 +1,4 @@
-// import cookies from './cookies.json' assert { type: 'json' }; 
-// console.log(cookies);
-console.log("Hello world!");
-// TODO:?
+import twitterFeed from "./src/twitter";
+// TODO: facebook
+
+export { twitterFeed as twitter }; 
