@@ -7,6 +7,7 @@
     "import": "./index.js",
     "require": "./index.cjs"
   },
+  "types": "./types/index.d.ts",
   "scripts": {
     "test": "node ./tests/test.js"
   },
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-json": "^6.0.1",
-    "rollup": "^4.5.1"
+    "rollup": "^4.5.1",
+    "semver": "^7.5.4"
   }
 }
