@@ -1,7 +1,7 @@
 
 // interface TwitterData 
 
-export function twitterFeed(handle: string, cookies: object[], date?: Date) : Promise<{
+export function twitterFeed(handle: string, cookies: object[], date?: Date) : Promise< 0 | {
     fullProfile: {
         name: string;
         handle: string;
