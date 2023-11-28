@@ -1,4 +1,4 @@
-export function twitter(handle: String, cookies: Object[], date?: Date) : {
+export function twitterFeed(handle: String, cookies: Object[], date?: Date) : {
     fullProfile: {
         name: string;
         handle: string;
