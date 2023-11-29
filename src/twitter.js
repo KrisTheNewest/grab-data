@@ -101,7 +101,7 @@ export default async function twitterFeed(handle, cookies, /*date*/) {
                 }
 
                 return ({ fullProfile, postUrl, postDate: postDateJson, postText, images, videoUrl, });
-            })
+            }).filter(p => p !== 0)
         ))
         .finally(() => browser.close());
 }

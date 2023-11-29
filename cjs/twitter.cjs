@@ -3,7 +3,7 @@
 var puppeteer = require('puppeteer');
 var promises = require('node:timers/promises');
 
-var firstDate = "Thu Nov 09 03:35:44 +0800 2023";
+var firstDate = "Wed Nov 01 03:35:44 +0800 2023";
 
 const startUpDate = Date.parse(firstDate);
 const handleDatesMap = new Map();
@@ -99,7 +99,7 @@ async function twitterFeed(handle, cookies, /*date*/) {
                 }
 
                 return ({ fullProfile, postUrl, postDate: postDateJson, postText, images, videoUrl, });
-            })
+            }).filter(p => p !== 0)
         ))
         .finally(() => browser.close());
 }
