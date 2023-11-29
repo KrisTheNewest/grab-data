@@ -1,6 +1,6 @@
 {
   "name": "@kristhenewest/grab-data",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Getting data from twitter and facebook",
   "type": "module",
   "exports": {
@@ -11,7 +11,7 @@
   "scripts": {
     "test": "node ./tests/test.js",
     "build": "npx rollup --config rollup.config.js",
-	"preversion": "npx rollup --config rollup.config.js"
+    "preversion": "npx rollup --config rollup.config.js"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@kristhenewest"
