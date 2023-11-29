@@ -10,7 +10,8 @@
   "types": "./types/index.d.ts",
   "scripts": {
     "test": "node ./tests/test.js",
-    "build": "npx rollup --config rollup.config.js"
+    "build": "npx rollup --config rollup.config.js",
+	"preversion": "npx rollup --config rollup.config.js"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@kristhenewest"
