@@ -9,7 +9,7 @@
   },
   "types": "./types/index.d.ts",
   "scripts": {
-    "test": "node ./tests/test.js",
+    "test": "node ./tests/test.js && node ./tests/test.cjs && node ./tests/test.mjs",
     "build": "npx rollup --config rollup.config.js"
   },
   "publishConfig": {

@@ -1,4 +1,4 @@
-import twitterFeed from "./src/twitter";
+import twitterFeed from "./src/twitter.js";
 // TODO: facebook
 
-export { twitterFeed as twitter }; 
+export { twitterFeed as userFeed }; 
