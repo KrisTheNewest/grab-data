@@ -1,4 +1,4 @@
-const userFeed = require("./cjs/twitter.cjs");
+const twitterFeed = require("./cjs/twitter.cjs");
 // TODO: facebook
 
-module.exports = { userFeed };
+module.exports = { twitterFeed };
