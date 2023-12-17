@@ -125,7 +125,7 @@ async function goToFullTweet(browser, url) {
 
             tweetPage.on('response', (response) => {
                 const reponseUrl = response.url();
-                if (reponseUrl.includes("mp4")) {
+                if (reponseUrl.includes("ext_tw_video") && reponseUrl.endsWith("mp4")) {
                     // console.log(reponseUrl);
                     resolve(reponseUrl);
                     clearTimeout(fallback);

@@ -124,13 +124,13 @@ async function goToFullTweet(browser, url) {
 
             tweetPage.on('response', (response) => {
                 const reponseUrl = response.url();
-                if (reponseUrl.includes("mp4")) {
+                if (reponseUrl.includes("ext_tw_video") && reponseUrl.endsWith("mp4")) {
                     // console.log(reponseUrl);
                     resolve(reponseUrl);
                     clearTimeout(fallback);
                 }
             });
-        });
+        }); ///ext_tw_video/1734127211471622144/pu/vid/avc1/720x900/ASUz1D9qxxct-oDv.mp4?tag=12
     }
     // full text is available only in the full tweet
     async function getFullText() {
