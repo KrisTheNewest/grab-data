@@ -129,7 +129,7 @@ async function goToFullTweet(browser, url) {
                     clearTimeout(fallback);
                 }
             });
-        }); ///ext_tw_video/1734127211471622144/pu/vid/avc1/720x900/ASUz1D9qxxct-oDv.mp4?tag=12
+        });
     }
     // full text is available only in the full tweet
     async function getFullText() {
