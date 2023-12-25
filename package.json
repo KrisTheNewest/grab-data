@@ -1,6 +1,6 @@
 {
   "name": "@kristhenewest/grab-data",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "Getting data from twitter and facebook",
   "type": "module",
   "exports": {
