@@ -57,7 +57,7 @@ async function twitterFeed(handle, token, startUpDate, handleDateMap) {
                 // the avatar next to the tweet on the left
                 // retweets don't share the same avatar/handle as the ak twitter
                 // so it needs to be scrapped too
-
+				//.//*[not(ancestor:://*[@data-testid='testCondensedMedia')]]//img .//*[not(ancestor::time]
                 // cannot use exact match - the value includes the handle/name
                 const avatarContainer = await tweet.$("::-p-xpath(.//*[contains(@data-testid, 'UserAvatar-Container')])"); //data-testid="UserAvatar-Container-ArknightsEN"
                 const profileLink     = await avatarContainer.$eval("::-p-xpath(.//a)", link => link.href);
@@ -75,7 +75,10 @@ async function twitterFeed(handle, token, startUpDate, handleDateMap) {
 
                 // cannot use exact match - theres only one URL with status, simpler
                 const postUrl  = await tweet.$eval("::-p-xpath(.//a[contains(@href, 'status')])", link => link.href);
-                const images   = await tweet.$$eval("::-p-xpath(.//*[@data-testid='tweetPhoto']//img)",
+				// .//*[not(ancestor::*[@data-testid='testCondensedMedia'])]//*[@data-testid='tweetPhoto']//img
+				// any element within the node => any type of element group[not an ancestor of NODE (NOT axis) of any type with []]
+				//
+                const images   = await tweet.$$eval("::-p-xpath(.//*[not(ancestor::*[@data-testid='testCondensedMedia'])]/*[@data-testid='tweetPhoto']//img)",
                     // orig is the biggest available version, bascially same as 4096x4096
                     // seems like twitter resizes all uploads to 4096
                     // regex: match all alphanumeric values after "name=" ("if they are followed by "name="")
