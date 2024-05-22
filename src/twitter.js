@@ -19,9 +19,9 @@ export default async function twitterFeed(handle, token, startUpDate, handleDate
     // instead of visitng the profile its the account page to save
     // number of tweeets you can visit per day
     // which can be a problem when pinging the page too often
-    await page.goto('https://twitter.com/settings/account');
+    await page.goto('https://x.com/settings/account');
     await page.setCookie(...cookies[handle]);
-    await page.goto('https://twitter.com/' + handle);
+    await page.goto('https://x.com/' + handle);
     await wait(3000);
     // await page.evaluate(() => Promise.resolve(window.scrollBy(0, 2000)));
     // await wait(3000);
