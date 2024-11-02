@@ -15,22 +15,21 @@ async function twitterFeed(handle, token, startUpDate, handleDateMap) {
 	const cookies = token;
     const browser = await puppeteer.launch({ headless: "new" });
     const page    = await browser.newPage();
+	page.setDefaultTimeout(60 * 1000);
 
     // you cannot set the cookies without having the page open
     // instead of visitng the profile its the account page to save
     // number of tweeets you can visit per day
     // which can be a problem when pinging the page too often
-    await page.goto('https://x.com/settings/account');
-    await page.setCookie(...cookies[handle]);
-    await page.goto('https://x.com/' + handle);
-    await promises.setTimeout(3000);
-    // await page.evaluate(() => Promise.resolve(window.scrollBy(0, 2000)));
-    // await wait(3000);
 
     // i decided to look for particular posts instead of the node
     // since twitter is generous enough to use article for tweets only
     // its relatively easy
-    return page.$$('::-p-xpath(/html/body//article)')
+	return page.goto('https://x.com/settings/account')
+	.then(() => page.setCookie(...cookies[handle]))
+	.then(() => page.goto('https://x.com/' + handle))
+	.then(() => promises.setTimeout(3000))
+    .then(() => page.$$('::-p-xpath(/html/body//article)')
         .then((articles) => Promise.all(
             // reverse = oldest tweets first
             articles.reverse().map(async (tweet) => {
@@ -108,7 +107,8 @@ async function twitterFeed(handle, token, startUpDate, handleDateMap) {
             })
         ))
 		.then(posts => posts.filter(p => p !== 0))
-        .finally(() => browser.close());
+        .finally(() => browser.close())
+	)
 }
 
 async function goToFullTweet(browser, url) {
