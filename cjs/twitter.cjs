@@ -4,14 +4,9 @@ var puppeteer = require('puppeteer');
 var promises = require('node:timers/promises');
 
 //TODO: CLEAN UP!!!
-//TODO: MIIMIC TWITTER API
 //TODO: ACCOMODATE FOR TEXTLESS POSTS
 
-// import firstDate from "../time.json" assert { type: 'json' }; 
-// const startUpDate = Date.parse(firstDate);
-// const handleDateMap = new Map();
-
-async function twitterFeed(handle, token, startUpDate, handleDateMap) {
+async function twitterFeed(handle, token, startUpDate = "00:00:00 UTC 1 January 1970", handleDateMap) {
 	const cookies = token;
     const browser = await puppeteer.launch({ headless: "new" });
     const page    = await browser.newPage();
@@ -40,10 +35,11 @@ async function twitterFeed(handle, token, startUpDate, handleDateMap) {
                 // this way we don't need to keep handles in this file
                 const postDateJson  = await tweet.$eval("::-p-xpath(.//time)", link => link.getAttribute("datetime"));
                 const postDateEpoch = Date.parse(postDateJson);
-                const lastDate = handleDateMap.has(handle) ? handleDateMap.get(handle) : Date.parse(startUpDate);
-
+                const lastDate = handleDateMap
+					? handleDateMap.has(handle) ? handleDateMap.get(handle) : Date.parse(startUpDate)
+					: 0 ;
                 if (postDateEpoch <= lastDate) return 0;
-                handleDateMap.set(handle, postDateEpoch);
+                handleDateMap?.set(handle, postDateEpoch);
                 // profile
                 // certain parts of tweets are "tagged" data-testid attribute
                 // i dunno how reliable it is in a long run
