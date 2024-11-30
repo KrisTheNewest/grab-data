@@ -2,7 +2,7 @@ const twitterFeed = require("../cjs/twitter.cjs");
 const allCookies = require ('../cookies.json');
 const time = require ('../time.json');
 
-twitterFeed("ArknightsEN", allCookies, time, new Map())
+twitterFeed("ArknightsEN", allCookies,)
 	.then(arr => {
 		console.log(arr);
 	})
