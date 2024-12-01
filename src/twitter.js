@@ -34,9 +34,7 @@ export default async function twitterFeed(handle, token, startUpDate = "00:00:00
                 // this way we don't need to keep handles in this file
                 const postDateJson  = await tweet.$eval("::-p-xpath(.//time)", link => link.getAttribute("datetime"));
                 const postDateEpoch = Date.parse(postDateJson);
-                const lastDate = handleDateMap
-					? handleDateMap.has(handle) ? handleDateMap.get(handle) : Date.parse(startUpDate)
-					: 0 ;
+                const lastDate = handleDateMap?.get(handle) || Date.parse(startUpDate);
                 if (postDateEpoch <= lastDate) return 0;
                 handleDateMap?.set(handle, postDateEpoch);
                 // profile
