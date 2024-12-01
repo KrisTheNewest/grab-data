@@ -1,5 +1,6 @@
 ## Getting posts from certain webpages
 F module is incomplete (WIP)
+
 You have to provide your own token
 
 Import:
@@ -17,10 +18,10 @@ twitterFeed(
 
     // params below are optional: save on website hits
     // display posts since a certain date
-    new Date() // optional: a parseable date, string or object
+    new Date(), // optional: a parseable date, string or object
 
     // a map to store the timestamp of the latest post
-    MapOfHandlesAndDates // optional: a Map object
+    MapOfHandlesAndDates, // optional: a Map object
 )
 .then(posts => { // an array of objects (possibly empty)
     // an example of a single post:
